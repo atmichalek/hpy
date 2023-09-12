@@ -49,24 +49,25 @@ def test2():
         coupling_sum = 0
         
         if (idx_up[i-1] !=0).any():
-            print(i)
-            print(idx_up[i-1])
+            # print(i)
+            # print(idx_up[i-1])
             for j in idx_up[i-1]:
                 coupling_sum = coupling_sum + y(j)
         #print(coupling_sum)
         f.append(
-             (velocity[i-1] / channel_len_m [i-1]) * (-y(i)+coupling_sum)
+                (velocity[i-1] / channel_len_m [i-1]) * (-y(i)+coupling_sum)
         )
-    
+
     initial_state = np.ones(shape=(N+1))
     initial_state[0] = 0
     ODE = jitcode(f)
     ODE.set_integrator("dopri5")
+    # ODE.compile_C(omp=True)
     # file1 = open('examples/cedarrapids1/367813_ODE','wb')
     # pickle.dump(ODE,file1)
     # file1.close()
-    p = 'examples/cedarrapids1/ode.so'
-    ODE.save_compiled(p,overwrite=True)
+    p = 'C:/Users/Alexander/Documents/hpy/examples/cedarrapids1/ode2.pyd'
+    ODE.save_compiled(destination=p,overwrite=True)
 
     ODE = jitcode(f,module_location = p)
     ODE.set_integrator("dopri5")

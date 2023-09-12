@@ -1,30 +1,31 @@
 ---
 description: model run in conus network
 network: examples/hydrosheds/conus.pkl
-solver: examples/hydrosheds/solver.so
+solver: C:/Users/Alexander/Documents/hpy/examples/hydrosheds/solver3.pyd
 parameters: examples/hydrosheds/conus.prm
 initial_states: dummy
-init_time: 1199145600
-end_time: 1230768000
-time_step: 3600
+init_time: 43200
+end_time: 31492800
+time_step: 86400
 forcings:
  precipitation:
-  script: /Users/felipe/hpy/hpy/src/io/AORC_conus_hourly.py
-  path: /Users/felipe/tmp/aorc/
-  prefix: AORC_APCP_2008
-  centroids: examples/hydrosheds/conus_centroids.csv
-  varname: APCP
+  script: src/io/HLM_Binaries.py
+  path: Z:/HLM_US/HLM_runs/bin/precip/2008/
+  prefix: ''
  evapotranspiration:
-  script: /Users/felipe/hpy/hpy/src/io/timeseries1.py
-  path: /Users/felipe/hio/hio/examples/timeseries1/timeseries_et.csv
+  script: src/io/HLM_Binaries.py
+  path: Z:/HLM_US/HLM_runs/bin/pet/2008/
+  prefix: ''
  temperature:
-  script: /Users/felipe/hpy/hpy/src/io/timeseries1.py
-  path: /Users/felipe/hio/hio/examples/timeseries1/temperature.csv
+  script: src/io/HLM_Binaries.py
+  path: Z:/HLM_US/HLM_runs/bin/temp/2008/
+  prefix: ''
  frozen_ground:
-  script: /Users/felipe/hpy/hpy/src/io/timeseries1.py
-  path: /Users/felipe/hio/hio/examples/timeseries1/frozenground.csv
+  script: src/io/HLM_Binaries.py
+  path: Z:/HLM_US/HLM_runs/bin/fg/2008/
+  prefix: ''
 output_file: 
-  script: /Users/felipe/hpy/hpy/src/io/out_netcdf1.py
-  path: /Users/felipe/hpy/hpy/examples/cedarrapids1/out/2008.nc
+  script: src/io/out_netcdf1.py
+  path: examples/cedarrapids1/out/conus_2008.nc
 
 

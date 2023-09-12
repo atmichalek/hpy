@@ -8,6 +8,10 @@ import time
 from scipy.linalg import solve
 import threading
 from solver import create_accum_numba_multiple
+import concurrent.futures
+from functools import partial
+
+
 
 # #calculates routing using Mantilla 2005 equation, using lambda1 and lambda 2 parameters
 # #deprecated. uses solve_ivp. very slow
@@ -239,10 +243,41 @@ def transfer2(hlm_object):
     hlm_object.ODESOLVER.set_initial_value(initial_state,0.0)
     time1 = hlm_object.time_step_sec / 3600 #hours
     out = hlm_object.ODESOLVER.integrate(time1)[1:]#value 0 is auxiliary
+    print(out)
     hlm_object.states['volume'] = out
     hlm_object.states['discharge'] = out / hlm_object.network['channel_length'] * hlm_object.params['river_velocity']
     #hlm_object.states['discharge'] = out / hlm_object.time_step_sec
     print('discharge routing in %f' % (time.time()-t))
+    
+
+
+# #Too much overhead to reduce time
+# def solve_ode(index, hlm_object, time1):
+#     out = hlm_object.ODESOLVER.integrate(time1)[index]  # value 0 is auxiliary
+#     return out
+
+# def transfer2_multi(hlm_object):
+#     t = time.time()
+#     N = hlm_object.network.shape[0]
+#     initial_state = np.zeros(shape=(N+1))
+#     initial_state[1:] = hlm_object.states['volume'].to_numpy()
+#     hlm_object.ODESOLVER.set_initial_value(initial_state,0.0)
+#     time1 = hlm_object.time_step_sec / 3600 #hours
+    
+#     # Run concurrently
+#     indexes = [i for i in range(1, N + 1)]
+
+#     # Use functools.partial to pass the additional arguments to solve_ode
+#     solve_ode_partial = partial(solve_ode, hlm_object=hlm_object, time1=time1)
+
+#     with concurrent.futures.ProcessPoolExecutor() as executor:
+#         out = list(executor.map(solve_ode_partial, indexes))
+    
+#     hlm_object.states['volume'] = out
+#     hlm_object.states['discharge'] = out / hlm_object.network['channel_length'] * hlm_object.params['river_velocity']
+#     #hlm_object.states['discharge'] = out / hlm_object.time_step_sec
+#     print('discharge routing in %f' % (time.time()-t))
+     
 
 def transfer3(hlm_object):
     t = time.time()

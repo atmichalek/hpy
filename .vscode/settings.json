@@ -18,6 +18,7 @@
     "terminal.integrated.env.windows": {
         "PYTHONPATH": "${workspaceFolder}/src",
     },
-    "python.envFile": "${workspaceFolder}/.env"
+    "python.envFile": "${workspaceFolder}/.env",
+    "cmake.configureOnOpen": true
       
 }

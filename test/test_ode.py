@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from test_dataframes import getTestDF1, getTestDF2
 import pandas as pd
-from utils.network.network_from_rvr_file import combine_rvr_prm
+from utils.network.network import combine_rvr_prm
 from model400names import STATES_NAMES
 import time
 import tensorflow as tf

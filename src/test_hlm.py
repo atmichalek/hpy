@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import netCDF4 as nc
 
+
 def plot1():
     NSTEPS = 240
     NGAGE =1
@@ -45,8 +46,9 @@ def test3():
     instance.advance()   
 
 
+
 if __name__ == "__main__":
-    test2()
+    test3()
     #plot1()
 
     
