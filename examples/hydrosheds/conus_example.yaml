@@ -1,7 +1,7 @@
 ---
 description: model run in conus network
 network: examples/hydrosheds/conus.pkl
-solver: C:/Users/Alexander/Documents/hpy/examples/hydrosheds/solver3.pyd
+solver: examples/hydrosheds/solver.so
 parameters: examples/hydrosheds/conus.prm
 initial_states: dummy
 init_time: 43200
@@ -25,7 +25,7 @@ forcings:
   path: Z:/HLM_US/HLM_runs/bin/fg/2008/
   prefix: ''
 output_file: 
-  script: src/io/out_netcdf1.py
-  path: examples/cedarrapids1/out/conus_2008.nc
+  script: /Users/felipe/hpy/hpy/src/io/out_netcdf1.py
+  path: /Users/felipe/hpy/hpy/examples/cedarrapids1/out/2008.nc
 
 

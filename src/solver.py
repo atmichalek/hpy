@@ -34,14 +34,15 @@ def create_solver(hlm_object):
 
     #if file exists, load solver from existing file
     if exists(hlm_object.pathsolver):
+        print('loading solver from %s',hlm_object.pathsolver)
         ODE=jitcode(f,module_location=hlm_object.pathsolver)
     else:
+        print('creating new solver')
         ODE = jitcode(f)
         ODE.set_integrator("dopri5")
-        #ODE.save_compiled(hlm_object.pathsolver)
+        ODE.save_compiled(hlm_object.pathsolver)
 
-    ODE.compile_C(omp=(["-openmp"],["-openmp"]))
-    ODE.set_integrator("dopri5")
+    #ODE.set_integrator("dopri5")
     return ODE
 
 # def create_acum(hlm_object):

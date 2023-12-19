@@ -2,20 +2,25 @@
 #""" bmi compatible version of Hillslope Link Model"""
 import pandas as pd
 import numpy as np
-from model400 import runoff1
-from model400names import CF_LOCATION , CF_UNITS, VAR_TYPES
-from routing import transfer3,transfer2,transfer4,transfer5
+# from models.model400 import runoff1
+from models.model400polars import runoff1
+
+from models.model400names import CF_LOCATION , CF_UNITS, VAR_TYPES
+from models.routing import transfer5,transfer9
 from solver import create_solver
 from yaml import Loader
 import yaml
-from utils.params.params_default import get_default_params
+from utils.params.params_manager import get_params_from_manager
 from utils.forcings.forcing_manager import get_default_forcings
-from utils.states.states_default import get_default_states
-from utils.network.network import get_default_network, get_network_from_file
+# from utils.states.states_default import get_default_states
+from utils.states.states_manager import get_states_from_manager
+from utils.network.network import get_network_from_file
 from utils.serialization import save_to_netcdf
-#from io3.forcing import check_forcings
+from utils.network.network_symbolic import NetworkSymbolic
 import importlib.util
 from utils.check_yaml import check_yaml1
+import time as mytime
+
 
 class HLM(object):
     """Creates a new HLM model """
@@ -35,9 +40,10 @@ class HLM(object):
         self.configuration = None
         self.pathsolver=None
         self.ODESOLVER =None
+        self.NetworkSymbolic=None
 
     
-    def init_from_file(self,config_file:str):
+    def init_from_file(self,config_file:str,option_solver=True):
         with open(config_file) as stream:
             try:
                 d = yaml.load(stream,Loader=Loader)
@@ -52,12 +58,16 @@ class HLM(object):
         self.end_time = d['end_time']
         self.time_step_sec= d['time_step']
         self.network = get_network_from_file(self.configuration)
-        self.states = get_default_states(self.network)
-        self.params = get_default_params(self.network)
+        # self.states = get_default_states(self.network)
+        self.states = get_states_from_manager(d,self.network)
+        self.params = get_params_from_manager(self.configuration,self.network)
         self.forcings = get_default_forcings(self.network)
         self.outputfile = d['output_file']['path']
-        self.pathsolver = d['solver']
-        self.ODESOLVER = create_solver(self)
+        self.NetworkSymbolic = NetworkSymbolic(self)
+
+        if option_solver==True:
+            self.pathsolver = d['solver']
+            self.ODESOLVER = create_solver(self)
         
 
         ...
@@ -76,7 +86,8 @@ class HLM(object):
         self.time_step=time_step
 
     def set_forcings(self):
-        print('reading forcings')
+        # print('reading forcings')
+        t = mytime.time()
         modelforcings = list(self.forcings.columns)[1:]
         config_forcings = list(self.configuration['forcings'].keys())
         for ii in range(len(modelforcings)):
@@ -99,14 +110,15 @@ class HLM(object):
                     except Exception as e:
                         print(e)
                         quit()
-        print('forcings loaded')
+        x = int((mytime.time()-t)*1000)
+        print('forcings loaded in {x} msec'.format(x=x))
                 
     
     def advance_one_step(self):
-        print(self.time)
+        # print(self.time)
         self.set_forcings()
         runoff1(self.states,self.forcings,self.params,self.network,self.time_step_sec)
-        transfer2(self) # volume, discharge with ode
+        transfer9(self) # volume, discharge symbolic
         transfer5(self) #basin vars
         save_to_netcdf(self.states,self.params,self.time,self.outputfile)
         self.time += self.time_step_sec
